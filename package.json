@@ -1,0 +1,27 @@
+{
+  "name": "hesprenrol",
+  "version": "1.0.0",
+  "description": "HESPROL EXTRACTOR APP",
+  "main": "index.js",
+  "author": "Pieter Subtiv Steyaert",
+  "private": false,
+  "license": "MIT",
+  "dependencies": {
+    "@google-cloud/vision": "^0.19.0",
+    "dat.gui": "^0.7.1",
+    "express": "4.13.4",
+    "socket.io": "^2.1.0",
+    "vector": "0.0.4",
+    "vectors": "^0.1.0",
+    "word2vec": "^1.1.2"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "workshop",
+    "antoinette",
+    "luca",
+    "google vision"
+  ]
+}
