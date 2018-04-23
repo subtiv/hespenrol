@@ -1,4 +1,6 @@
 .DS_Store
+front/node_modules
+front/public/images/.DS_Store
 lib-cov
 *.seed
 *.log

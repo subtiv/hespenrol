@@ -4,18 +4,19 @@ var app = express();
 var path = require('path');
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 5000;
 const vision = require('@google-cloud/vision');
 const client = new vision.ImageAnnotatorClient({
   keyFilename: 'prtct/hespenrolk.json'
 });
 var fs = require('fs');
 var Vector = require("vector").Vector;
+var ExifImage = require('exif').ExifImage;
 
 
 //settings
 const IMG_LOC = "/images";
-const IMG_S_LOC = "resources/originals";
+const IMG_S_LOC = "front/public/images";
 var rendersettings = {};
 
 
@@ -23,12 +24,16 @@ server.listen(port, function() {
   console.log('Server listening at port %d', port);
 });
 
+console.log(__dirname);
 // Routing
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(IMG_LOC, express.static(__dirname + '/resources/originals/'));
+app.use(IMG_LOC, express.static(__dirname + 'front/public/images/'));
 
-
-
+// Answer API requests.
+app.get('/api', function (req, res) {
+  res.set('Content-Type', 'application/json');
+  res.send('{"message":"Hello from the custom server!"}');
+});
 
 // Chatroom
 
@@ -44,6 +49,8 @@ io.on('connection', function(socket) {
   //   });
   // });
 
+  //console.log('CONNECTED: ', socket);
+
   function inform(msg) {
     socket.emit("inform", {
       msg
@@ -57,6 +64,7 @@ io.on('connection', function(socket) {
     };
     fs.readdir(IMG_S_LOC, function(err, items) {
       socket.emit("img", items.map(function(item) {
+        
         var rv = IMG_LOC + "/" + item;
         alldata.individual.push({
           image: rv
@@ -86,7 +94,6 @@ io.on('connection', function(socket) {
           });
         })
       }
-
 
       var toppromises = [];
 
@@ -193,6 +200,7 @@ io.on('connection', function(socket) {
           })
       }))
 
+      //All = all google Vision functions
       Promise.all(toppromises).then(function(values) {
         var sender = {};
         values.forEach(val=>{
@@ -200,6 +208,7 @@ io.on('connection', function(socket) {
         });
         socket.emit("parsed", sender);
       });
+
     });
 
   }

@@ -9,6 +9,7 @@
   "dependencies": {
     "@google-cloud/vision": "^0.19.0",
     "dat.gui": "^0.7.1",
+    "exif": "^0.6.0",
     "express": "4.13.4",
     "socket.io": "^2.1.0",
     "vector": "0.0.4",
@@ -16,7 +17,8 @@
     "word2vec": "^1.1.2"
   },
   "scripts": {
-    "start": "node index.js"
+    "start": "node server",
+    "heroku-postbuild": "cd front/ && npm install && npm install --only=dev --no-shrinkwrap && npm run build"
   },
   "keywords": [
     "workshop",
