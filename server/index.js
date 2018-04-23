@@ -51,9 +51,10 @@ io.on('connection', function(socket) {
 
   //console.log('CONNECTED: ', socket);
 
-  function inform(msg) {
+  function inform(msg, progress) {
     socket.emit("inform", {
-      msg
+      msg,
+      progress
     });
   }
 
@@ -71,7 +72,7 @@ io.on('connection', function(socket) {
         });
         return rv
       }))
-      inform("original images loaded");
+      inform("original images loaded", 20);
 
       function getInformation(slctr) {
         return new Promise((oresolve, oreject) => {
@@ -132,7 +133,7 @@ io.on('connection', function(socket) {
             labelDescription.average = averagelabels.filter(label => label.score > rendersettings.minlabela).map(label => label.description);
             labelDescription.average = uniq(labelDescription.average);
 
-            inform("labels parsed");
+            inform("labels parsed", 60);
             topresolve(labelDescription);
           }).catch(err => {
             topreject(err);
@@ -193,7 +194,7 @@ io.on('connection', function(socket) {
 
             allcolors = allcolors.filter(col=>col[0]>0);
             colorResult.average = allcolors;
-            inform("colors analyse ready");
+            inform("colors analyse ready", 100);
             topresolve(colorResult);
           }).catch(err => {
             topreject(err);

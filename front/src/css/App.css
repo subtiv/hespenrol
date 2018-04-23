@@ -31,15 +31,54 @@
   color: #f60;
 }
 
+h2 {
+  color: #222;
+  font-family: 'Roboto Mono', Arial, Helvetica, sans-serif;
+  font-size: 1.2em;
+  font-weight: 700;
+}
+
+h3 {
+  color: #222;
+  font-family: 'Roboto Mono', Arial, Helvetica, sans-serif;
+  font-size: 1.2em;
+  font-weight: 700;
+}
+
+.label-list {
+  font-family: 'Roboto Mono', Arial, Helvetica, sans-serif;
+  font-size: 1.4em;
+  display: inline;
+  margin: 8px;
+}
+
+.img-content {
+  padding: 12px;
+}
+
+h4 {
+  font-family: 'Roboto Mono', Arial, Helvetica, sans-serif;
+  display: inline-block;
+  margin: 4px;
+  font-size: 1.2em
+}
+
 .thumbnail img {
   width: 100%;
   height: auto;
+  padding: 20px;
 }
 
 .tab-content {
+  text-align: left;
   color: #222;
-  padding: 20px;
+  padding: 20px 0px;
 }
+
+.form-control {
+  max-width: 180px;
+}
+
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
