@@ -17,14 +17,14 @@ download this repository, unzip it and place it on your desktop
 go to the folder 
 
 ```
-hespenrol/front/public/images
+hespenrol-master/front/public/images
 ```
 
 ### 4. run the app
 open a terminal window
 
 ```
-cd Desktop/hespenrol
+cd ~/Desktop/hespenrol-master
 npm install
 npm start
 ````
