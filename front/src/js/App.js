@@ -128,6 +128,10 @@ class App extends Component {
     this.allHashes.forEach(hash => {
       counted[hash] = counted[hash] ? counted[hash] + 1 : 1;
     });
+    let hashes = Object.keys(counted);
+    hashes.sort((a, b) => { return counted[a] - counted[b]});
+    this.geo = hashes;
+    console.log('HASHES', this.hashes);
   }
 
   _handleColorFilterChange(e) {

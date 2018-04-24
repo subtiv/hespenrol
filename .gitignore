@@ -14,4 +14,3 @@ coverage
 .idea
 dist
 .nyc_output
-prtct/*
