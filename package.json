@@ -11,6 +11,8 @@
     "dat.gui": "^0.7.1",
     "exif": "^0.6.0",
     "express": "4.13.4",
+    "filehound": "^1.16.2",
+    "glob": "^7.1.2",
     "socket.io": "^2.1.0",
     "vector": "0.0.4",
     "vectors": "^0.1.0",

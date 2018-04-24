@@ -30,7 +30,8 @@ class App extends Component {
         mixcolors: 0.5,
         iteratecolors: 10,
       },
-      tab: 'colors'
+      tab: 'colors',
+      geoEnabled: false,
     };
     this.imgData = new Map();
     this.allHashes = [];
@@ -160,20 +161,27 @@ class App extends Component {
         //Lat
         let latArr = this.exifdata.GPSLatitude;
         let latDir = this.exifdata.GPSLatitudeRef;
-        let lat = comp.getDMS2DD(latArr[0], latArr[1], latArr[2], latDir);
-        //Lon
-        let lonArr = this.exifdata.GPSLongitude;
-        let lonDir = this.exifdata.GPSLongitudeRef;
-        let lon = comp.getDMS2DD(lonArr[0], lonArr[1], lonArr[2], lonDir);
-        let hash = Geohash.encode(lat, lon);
-        comp.allHashes.push(hash.substr(0, 7));
-        imgDatum.geo = [{
+        let geoBool = false
+        if(latArr) {
+          let lat = comp.getDMS2DD(latArr[0], latArr[1], latArr[2], latDir);
+          //Lon
+          let lonArr = this.exifdata.GPSLongitude;
+          let lonDir = this.exifdata.GPSLongitudeRef;
+          let lon = comp.getDMS2DD(lonArr[0], lonArr[1], lonArr[2], lonDir);
+          geoBool = true;
+          let hash = Geohash.encode(lat, lon);
+          comp.allHashes.push(hash.substr(0, 7));
+          imgDatum.geo = [{
           position: {
             lat: lat,
             lon: lon,
           },
           hash: hash,
         }]
+        }
+        if(geoBool) {
+          comp.setState({ geoEnabled: true});
+        }
       });
     }
     this.imgData.set(id, imgDatum);
@@ -284,6 +292,7 @@ class App extends Component {
         <Label>{geo.hash}</Label>
       </h3>
     })
+
     return (
       <div className="App">
         <div className="App-header">
@@ -313,7 +322,8 @@ class App extends Component {
                 onChange={this._handleLabelFilterChange}
               />
             </Tab>
-            <Tab eventKey={'geo'} title="Geolocation">
+            { this.state.geoEnabled ? (
+              <Tab eventKey={'geo'} title="Geolocation">
               <h2>Most common:</h2>
               {geoList}
               <h2>Filter:</h2>
@@ -323,7 +333,9 @@ class App extends Component {
                 placeholder="123abcd"
                 onChange={this._handleGeoFilterChange}
               />
-            </Tab>
+             </Tab>
+            ) : null}
+            
           </Tabs>
         </div>
         <p className="App-intro">

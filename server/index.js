@@ -4,6 +4,7 @@ var app = express();
 var path = require('path');
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
+var glob = require( 'glob' );  
 var port = process.env.PORT || 5000;
 const vision = require('@google-cloud/vision');
 const client = new vision.ImageAnnotatorClient({
@@ -16,7 +17,7 @@ var ExifImage = require('exif').ExifImage;
 
 //settings
 const IMG_LOC = "/images";
-const IMG_S_LOC = "front/public/images";
+const IMG_S_LOC = "front/public/images/";
 var rendersettings = {};
 
 
@@ -65,12 +66,11 @@ io.on('connection', function(socket) {
     };
     fs.readdir(IMG_S_LOC, function(err, items) {
       socket.emit("img", items.map(function(item) {
-        
-        var rv = IMG_LOC + "/" + item;
-        alldata.individual.push({
-          image: rv
-        });
-        return rv
+          var rv = IMG_LOC + "/" + item;
+          alldata.individual.push({
+            image: rv
+          });
+          return rv
       }))
       inform("original images loaded", 20);
 
