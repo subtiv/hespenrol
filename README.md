@@ -1,25 +1,38 @@
 
-# Socket.IO Chat
+# Hespenrol
 
-A simple chat demo for socket.io
+little tool to add some data to your pictures
 
 ## How to use
 
+### 1 install NPM
+
+
+### 2 download this repo
+download this repository, unzip it and place it on your desktop
+
+### 2 add your pictures
+go to the folder 
+
 ```
-$ cd socket.io
-$ npm install
-$ cd examples/chat
-$ npm install
-$ npm start
+hespenrol/front/public/images
 ```
 
-And point your browser to `http://localhost:3000`. Optionally, specify
-a port by supplying the `PORT` env variable.
+### 3 run the app
+open a terminal window
 
-## Features
+```
+cd Desktop/hespenrol
+npm install
+npm start
+````
+open a second terminal window
+```
+cd front
+npm install
+npm start
+```
 
-- Multiple users can join a chat room by each entering a unique username
-on website load.
-- Users can type chat messages to the chat room.
-- A notification is sent to all users when a user joins or leaves
-the chatroom.
+Now wait. And point your browser to `http://localhost:3000`.
+
+
