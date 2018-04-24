@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Alert, Badge, Col, FormControl, Grid, Label, ProgressBar, Row, Tabs, Tab, Thumbnail } from 'react-bootstrap';
 import EXIF from 'exif-js';
 import rgbHex from 'rgb-hex';
+import namer from 'color-namer';
 
 import Connection from './components/Connection';
 import logo from '../assets/logo.svg';
@@ -14,6 +15,8 @@ class App extends Component {
       colors: [],
       colorFilter: '',
       images: [],
+      geo: [],
+      geoFilter: '',
       labels: [],
       labelFilter: '',
       message: null,
@@ -61,7 +64,9 @@ class App extends Component {
       //Color
       data.color.individual.forEach((imgColors, i) => {
         imgColors = imgColors.map(cObj => {
-          return '#' + rgbHex(cObj.red, cObj.green, cObj.blue);
+          let hex = '#' + rgbHex(cObj.red, cObj.green, cObj.blue);
+          let colorObject = namer(hex, { pick: ['html']});
+          return colorObject['html'][0];
         });
         let imgDatum = this.imgData.get(i);
         imgDatum.colors = imgColors;
@@ -76,7 +81,9 @@ class App extends Component {
 
       //Average
       let hexColors = data.color.average.map(colorArr => {
-        return this.colorArrToHex(colorArr);
+        let hex = this.colorArrToHex(colorArr); 
+        let cObj = namer(hex, { pick: ['html']});
+        return cObj['html'][0];
       })
       this.setState({ 
         colors: hexColors,
@@ -160,21 +167,36 @@ class App extends Component {
         filter = this.state.colorFilter;
       } else if (type == 'labels') {
         filter = this.state.labelFilter;
+      } else {
+        filter = this.state.geoFilter;
       }
       let passFilter = true;
       if(!this.state.fetching) {
         passFilter = false;
         data = this.imgData.get(i);
         content = data[type].map(d => {
-          if (d.includes(filter)) {
-            passFilter = true;
+          //obj to string
+          let toFilter = d;
+          if(type == 'colors') {
+            toFilter = d.name;
+            if (toFilter.includes(filter)) {
+              passFilter = true;
+            }
+            return (
+              <h4><Label style={ this.state.tab === 'colors' ? { backgroundColor: `${d.hex}` } : null }>{d.name} - {d.hex}</Label></h4>
+            )
+          } else if (type == 'labels'){
+            toFilter = d;
+            if (toFilter.includes(filter)) {
+              passFilter = true;
+            }
+            return (
+              <h4><Label>{d}</Label></h4>
+            )
           }
-          return (
-            <h4><Label style={ this.state.tab === 'colors' ? { backgroundColor: `${d}` } : null }>{d}</Label></h4>
-          )
-          });
+          
+        });
       }
-      console.log(content);
       if (passFilter) {
         return (
           <Col className='thumbnail' key={`imgage_${i}`} xs={6} md={4}>
@@ -189,7 +211,7 @@ class App extends Component {
 
     let colorList = this.state.colors.map((color, i) => (
       <h3 className='label-list color' key={`color_${i}`}>
-        <Label style={{ backgroundColor: `${color}` }}>{color}</Label>
+        <Label style={{ backgroundColor: `${color.hex}` }}>{color.name} - {color.hex}</Label>
       </h3>
     ));
 
