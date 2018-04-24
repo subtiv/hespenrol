@@ -3,6 +3,7 @@ import { Alert, Badge, Col, FormControl, Grid, Label, ProgressBar, Row, Tabs, Ta
 import EXIF from 'exif-js';
 import rgbHex from 'rgb-hex';
 import namer from 'color-namer';
+import Geohash from 'latlon-geohash';
 
 import Connection from './components/Connection';
 import logo from '../assets/logo.svg';
@@ -32,8 +33,10 @@ class App extends Component {
       tab: 'colors'
     };
     this.imgData = new Map();
+    this.allHashes = [];
     this._connection = new Connection(this.state.renderSettings);
     this._handleColorFilterChange = this._handleColorFilterChange.bind(this);
+    this._handleGeoFilterChange = this._handleGeoFilterChange.bind(this);
     this._handleLabelFilterChange = this._handleLabelFilterChange.bind(this);
     this._handleSelectTab = this._handleSelectTab.bind(this);
     this._getExifData = this._getExifData.bind(this);
@@ -90,6 +93,7 @@ class App extends Component {
         labels: data.label.average,
         fetching: false
       });
+      this._calculateHashes();
       console.log(this.state);
     });
 
@@ -109,8 +113,29 @@ class App extends Component {
     return '#' + rgbHex(mappedColorArr[0], mappedColorArr[1], mappedColorArr[2]);
   };
 
+  getDMS2DD(days, minutes, seconds, direction) {
+    direction.toUpperCase();
+    var dd = days + minutes/60 + seconds/(60*60);
+    //alert(dd);
+    if (direction == "S" || direction == "W") {
+        dd = dd*-1;
+    } // Don't do anything for N or E
+    return dd;
+  }
+
+  _calculateHashes() {
+    let counted = {};
+    this.allHashes.forEach(hash => {
+      counted[hash] = counted[hash] ? counted[hash] + 1 : 1;
+    });
+  }
+
   _handleColorFilterChange(e) {
     this.setState({ colorFilter: e.target.value });
+  }
+
+  _handleGeoFilterChange(e) {
+    this.setState({ geoFilter: e.target.value });
   }
 
   _handleLabelFilterChange(e) {
@@ -123,12 +148,31 @@ class App extends Component {
   }
 
   _getExifData(img, id) {
+    let comp = this;
     let imgDatum = this.imgData.get(id);
     //console.log('getting image data', this.refs , id);
     if(img && !imgDatum.exifdata) {
       EXIF.getData(img, function() {
         imgDatum.exifdata = this.exifdata;
         console.log(this.exifdata);
+        //Geo shizzle
+        //Lat
+        let latArr = this.exifdata.GPSLatitude;
+        let latDir = this.exifdata.GPSLatitudeRef;
+        let lat = comp.getDMS2DD(latArr[0], latArr[1], latArr[2], latDir);
+        //Lon
+        let lonArr = this.exifdata.GPSLongitude;
+        let lonDir = this.exifdata.GPSLongitudeRef;
+        let lon = comp.getDMS2DD(lonArr[0], lonArr[1], lonArr[2], lonDir);
+        let hash = Geohash.encode(lat, lon);
+        comp.allHashes.push(hash.substr(0, 7));
+        imgDatum.geo = [{
+          position: {
+            lat: lat,
+            lon: lon,
+          },
+          hash: hash,
+        }]
       });
     }
     this.imgData.set(id, imgDatum);
@@ -171,6 +215,7 @@ class App extends Component {
         filter = this.state.geoFilter;
       }
       let passFilter = true;
+      console.log('TYPE', type);
       if(!this.state.fetching) {
         passFilter = false;
         data = this.imgData.get(i);
@@ -192,6 +237,18 @@ class App extends Component {
             }
             return (
               <h4><Label>{d}</Label></h4>
+            )
+          } else if (type === 'geo') {
+            toFilter = d.hash;
+            if (toFilter.includes(filter)) {
+              passFilter = true;
+            }
+            return (
+              <span>
+                <h4>{d.position.lat}</h4>
+                <h4>{d.position.lon}</h4>
+                <h4 className='hash' >Geohash: <Label>{d.hash}</Label></h4>
+              </span>
             )
           }
           
@@ -221,6 +278,11 @@ class App extends Component {
       </h3>
     ));
 
+    let geoList = this.state.geo.map((geo, i) => {
+      <h3 className='label-list geo' key={`geo${i}`}>
+        <Label>{geo.hash}</Label>
+      </h3>
+    })
     return (
       <div className="App">
         <div className="App-header">
@@ -250,7 +312,16 @@ class App extends Component {
                 onChange={this._handleLabelFilterChange}
               />
             </Tab>
-            <Tab eventKey={'geolocation'} title="Geolocation">
+            <Tab eventKey={'geo'} title="Geolocation">
+              <h2>Most common:</h2>
+              {geoList}
+              <h2>Filter:</h2>
+              <FormControl
+                type="text"
+                value={this.state.geoFilter}
+                placeholder="123abcd"
+                onChange={this._handleGeoFilterChange}
+              />
             </Tab>
           </Tabs>
         </div>

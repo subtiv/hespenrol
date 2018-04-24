@@ -62,6 +62,9 @@ h4 {
   margin: 4px;
   font-size: 1.2em
 }
+.hash {
+  display: block;
+}
 
 .thumbnail img {
   width: 100%;
